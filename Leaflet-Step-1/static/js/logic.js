@@ -25,30 +25,43 @@ L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_toke
 var url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_month.geojson";
 
 d3.json(url).then(function(data){
-    var features= data.features;
-
-    //loop thru data
-    for (var i=0; i < features.length; i++){
-
+    function markers(features){
+        return{
+            fillColor: chooseColor(feature.geometry.coordinates[2]),
+            fillOpacity: 0.75,
+            radius: chooseRadius(feature.properties.mag),
+            weight: 1.5
+        };
     }
-});
+    
+    //choose color based on depth
+    function chooseColor(depth){
+        if(depth>=90){
+            return "#FF6400"
+        }
+        else if (depth<90 && depth>=75){
+            return "#FF6F12"
+        }
+        else if (depth<74 && depth>=50){
+            return "#FF7B25"
+        }
+        else if (depth<49 && depth>=25){
+            return "#FF8536"
+        }
+        else if (depth<24 && depth>=10){
+            return "#FF8F46"
+        }
+        else {
+            return "#FE9B5B"
+        };
+    };
 
-
-//createFeature fuunction
-function createFeatures(earthquakes){
-    //bind pop up with info
-    function onEachFeature(feature, layer){
-        layer.bindPopup("<h4>" + feature.properties.place + "</h4><hr><p>" +
-            new Date(feature.properties.time)+ "</p>");
-    }
-    //create layer with feature array
-    var earthquakeData = L.geoJson(earthquakes, {
-        onEachFeature: onEachFeature 
-    });
-    //sending layer info to createMap func
-    createMap(earthquakeData);
-}
-
+    //choose radius based on magnitude
+    function chooseRadius(mag){
+        return mag*5;
+    };
 
     
+});
+
 
