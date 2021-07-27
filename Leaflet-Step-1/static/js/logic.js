@@ -25,34 +25,35 @@ L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_toke
 var url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_month.geojson";
 
 d3.json(url).then(function(data){
-    function markers(features){
+    function style(feature){
         return{
             fillColor: chooseColor(feature.geometry.coordinates[2]),
             fillOpacity: 0.75,
+            stroke: true, 
             radius: chooseRadius(feature.properties.mag),
             weight: 1.5
         };
     }
-    
+
     //choose color based on depth
     function chooseColor(depth){
         if(depth>=90){
-            return "#FF6400"
+            return "#B40000"
         }
         else if (depth<90 && depth>=75){
-            return "#FF6F12"
+            return "#F57038"
         }
-        else if (depth<74 && depth>=50){
-            return "#FF7B25"
+        else if (depth<75 && depth>=50){
+            return "#F59338"
         }
-        else if (depth<49 && depth>=25){
-            return "#FF8536"
+        else if (depth<50 && depth>=25){
+            return "#F5C138"
         }
-        else if (depth<24 && depth>=10){
-            return "#FF8F46"
+        else if (depth<25 && depth>=10){
+            return "#F5DA38"
         }
         else {
-            return "#FE9B5B"
+            return "#DDF538"
         };
     };
 
@@ -61,7 +62,25 @@ d3.json(url).then(function(data){
         return mag*5;
     };
 
+    L.geoJson(data,{
+        //circle markers
+        pointToLayer: function(feature, latlng){
+            return L.circleMarker(latlng);
+        },
+        style: style,
     
+    }).addTo(myMap);
+
+    //legend
+    var legend = L.control({
+        position: "bottomright"
+    });
+
+    legend.onAdd = function(){
+
+    };
+
+    legend.addTo(myMap)
 });
 
 
